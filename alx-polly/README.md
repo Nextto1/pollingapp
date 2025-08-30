@@ -11,6 +11,12 @@ A modern, responsive polling application built with Next.js 15, TypeScript, Tail
 - **Search & Filter**: Find polls by title, description, or status
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
 
+### Authentication & Security
+- **Supabase Authentication**: Secure user registration and login
+- **Protected Routes**: Middleware-based route protection
+- **User Sessions**: Persistent authentication state
+- **Email Verification**: Secure email confirmation for new accounts
+
 ### User Experience
 - **Modern UI**: Clean, accessible interface using Shadcn UI components
 - **Real-time Results**: Live vote counting and percentage calculations
@@ -23,6 +29,7 @@ A modern, responsive polling application built with Next.js 15, TypeScript, Tail
 - **Tailwind CSS**: Utility-first styling with custom design system
 - **Shadcn UI**: High-quality, accessible component library
 - **API Routes**: RESTful API endpoints for all CRUD operations
+- **Supabase**: Backend-as-a-Service for authentication and database
 
 ## 📁 Project Structure
 
@@ -49,20 +56,26 @@ alx-polly/
 │   │       └── page.tsx
 │   ├── globals.css             # Global styles with Shadcn variables
 │   ├── layout.tsx              # Root layout with navigation
-│   └── page.tsx                # Landing page
+│   └── page.tsx                # Landing page (redirects to /polls)
 ├── components/                  # Reusable components
 │   ├── ui/                     # Shadcn UI components
 │   │   ├── button.tsx         # Button component
 │   │   ├── card.tsx           # Card component
 │   │   ├── input.tsx          # Input component
 │   │   └── textarea.tsx       # Textarea component
-│   └── layout/                 # Layout components
-│       └── navbar.tsx         # Navigation bar
+│   ├── layout/                 # Layout components
+│   │   └── navbar.tsx         # Navigation bar
+│   └── auth/                   # Authentication components
+│       └── protected-route.tsx # Protected route wrapper
+├── contexts/                   # React contexts
+│   └── auth-context.tsx       # Authentication context
 ├── lib/                        # Utility libraries
 │   ├── auth.ts                # Authentication utilities
+│   ├── supabase.ts            # Supabase client configuration
 │   └── utils.ts               # General utilities (cn function)
 ├── types/                      # TypeScript type definitions
 │   └── poll.ts                # Poll-related types
+├── middleware.ts              # Next.js middleware for route protection
 ├── components.json            # Shadcn configuration
 ├── tailwind.config.ts         # Tailwind CSS configuration
 └── tsconfig.json              # TypeScript configuration
@@ -75,17 +88,45 @@ alx-polly/
 - **Styling**: Tailwind CSS
 - **UI Components**: Shadcn UI + Radix UI
 - **Icons**: Lucide React
-- **State Management**: React hooks (useState, useEffect)
+- **Authentication**: Supabase Auth
+- **Database**: Supabase (PostgreSQL)
+- **State Management**: React hooks + Context API
 - **API**: Next.js API Routes
-- **Authentication**: Placeholder (ready for NextAuth.js, Clerk, etc.)
+- **Middleware**: Next.js Middleware for route protection
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 - Node.js 18+ 
 - npm or yarn
+- Supabase account
 
-### Installation
+### 1. Supabase Setup
+
+1. **Create a Supabase project**
+   - Go to [supabase.com](https://supabase.com)
+   - Create a new project
+   - Note down your project URL and anon key
+
+2. **Configure Authentication**
+   - In your Supabase dashboard, go to Authentication > Settings
+   - Configure your site URL (e.g., `http://localhost:3000`)
+   - Set up email templates if desired
+
+### 2. Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```env
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Optional: Supabase Service Role Key (for server-side operations)
+# SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+```
+
+### 3. Installation
 
 1. **Clone the repository**
    ```bash
@@ -113,6 +154,32 @@ alx-polly/
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
 
+## 🔐 Authentication Features
+
+### User Registration
+- Email and password registration
+- Email verification required
+- User profile with name and email
+- Secure password validation
+
+### User Login
+- Email/password authentication
+- Persistent sessions
+- Automatic redirect after login
+- Remember redirect destination
+
+### Protected Routes
+- Middleware-based route protection
+- Client-side route protection
+- Automatic redirect to login
+- Loading states during authentication
+
+### User Management
+- Sign out functionality
+- User profile display
+- Session management
+- Secure token handling
+
 ## 📋 Features Roadmap
 
 ### Phase 1: Core Functionality ✅
@@ -120,15 +187,16 @@ alx-polly/
 - [x] Poll listing and search
 - [x] Responsive UI with Shadcn components
 - [x] API routes for CRUD operations
+- [x] Supabase authentication
+- [x] Protected routes
 
-### Phase 2: Authentication & User Management
-- [ ] User registration and login
+### Phase 2: Enhanced Features
 - [ ] User profiles and dashboard
 - [ ] Poll ownership and permissions
 - [ ] Vote history and analytics
+- [ ] Real-time updates with WebSockets
 
 ### Phase 3: Advanced Features
-- [ ] Real-time updates with WebSockets
 - [ ] Poll categories and tags
 - [ ] Advanced analytics and charts
 - [ ] Poll sharing and embedding
@@ -152,19 +220,20 @@ The application uses a consistent design system built on:
 
 ## 🔧 Configuration
 
+### Supabase Configuration
+The app uses Supabase for authentication and database. Key configuration points:
+
+- **Authentication**: Email/password with email verification
+- **Session Management**: Automatic session refresh
+- **Route Protection**: Middleware and client-side protection
+- **User Data**: Stored in Supabase auth.users table
+
 ### Environment Variables
-Create a `.env.local` file for environment-specific configuration:
+Required environment variables:
 
 ```env
-# Database (when implementing)
-DATABASE_URL=your_database_url
-
-# Authentication (when implementing)
-NEXTAUTH_SECRET=your_secret
-NEXTAUTH_URL=http://localhost:3000
-
-# API Keys (if needed)
-API_KEY=your_api_key
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 ### Shadcn UI
@@ -192,8 +261,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Radix UI](https://www.radix-ui.com/) for accessible primitives
 - [Tailwind CSS](https://tailwindcss.com/) for utility-first styling
 - [Next.js](https://nextjs.org/) for the amazing React framework
+- [Supabase](https://supabase.com/) for authentication and database
 - [Lucide](https://lucide.dev/) for the icon library
 
 ---
 
-Built with ❤️ using Next.js and Shadcn UI
+Built with ❤️ using Next.js, Supabase, and Shadcn UI
