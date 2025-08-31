@@ -1,54 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
-import type { Poll, CreatePollData } from '@/types/poll'
+import { serverDb } from '@/lib/database'
 
-// Mock data store (replace with actual database)
-let polls: Poll[] = [
-  {
-    id: "1",
-    title: "What's your favorite programming language?",
-    description: "Let's see what the community prefers",
-    options: [
-      { id: "1", text: "JavaScript/TypeScript", votes: 45 },
-      { id: "2", text: "Python", votes: 38 },
-      { id: "3", text: "Java", votes: 25 },
-      { id: "4", text: "C++", votes: 18 },
-      { id: "5", text: "Go", votes: 15 },
-      { id: "6", text: "Rust", votes: 15 },
-    ],
-    createdBy: "user1",
-    createdAt: new Date("2024-01-15"),
-    expiresAt: new Date("2024-02-15"),
-    isActive: true,
-    allowMultipleVotes: false,
-    totalVotes: 156,
-  }
-]
-
-// GET /api/polls - Get all polls
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search')
-    const active = searchParams.get('active')
+    const status = searchParams.get('status') as 'active' | 'closed' | 'draft' | null
+    const limit = parseInt(searchParams.get('limit') || '20')
+    const offset = parseInt(searchParams.get('offset') || '0')
 
-    let filteredPolls = polls
-
-    // Filter by search term
-    if (search) {
-      filteredPolls = filteredPolls.filter(poll =>
-        poll.title.toLowerCase().includes(search.toLowerCase()) ||
-        poll.description?.toLowerCase().includes(search.toLowerCase())
-      )
+    const filters = {
+      ...(search && { search }),
+      ...(status && { status }),
+      limit,
+      offset
     }
 
-    // Filter by active status
-    if (active !== null) {
-      const isActive = active === 'true'
-      filteredPolls = filteredPolls.filter(poll => poll.isActive === isActive)
-    }
-
-    return NextResponse.json(filteredPolls)
+    const polls = await serverDb.getPolls(filters)
+    
+    return NextResponse.json(polls)
   } catch (error) {
+    console.error('Error fetching polls:', error)
     return NextResponse.json(
       { error: 'Failed to fetch polls' },
       { status: 500 }
@@ -56,40 +28,45 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/polls - Create a new poll
 export async function POST(request: NextRequest) {
   try {
-    const body: CreatePollData = await request.json()
-    
+    const body = await request.json()
+    const { title, description, options, vote_type, allow_multiple_votes, max_votes_per_user, expires_at } = body
+
     // Validate required fields
-    if (!body.title || !body.options || body.options.length < 2) {
+    if (!title || !options || !Array.isArray(options) || options.length < 2) {
       return NextResponse.json(
         { error: 'Title and at least 2 options are required' },
         { status: 400 }
       )
     }
 
-    const newPoll: Poll = {
-      id: Date.now().toString(), // Simple ID generation
-      title: body.title,
-      description: body.description,
-      options: body.options.map((text, index) => ({
-        id: (index + 1).toString(),
-        text,
-        votes: 0
-      })),
-      createdBy: "user1", // TODO: Get from auth
-      createdAt: new Date(),
-      expiresAt: body.expiresAt,
-      isActive: true,
-      allowMultipleVotes: body.allowMultipleVotes || false,
-      totalVotes: 0,
+    // Validate options
+    const validOptions = options.filter((option: string) => option.trim() !== '')
+    if (validOptions.length < 2) {
+      return NextResponse.json(
+        { error: 'At least 2 valid options are required' },
+        { status: 400 }
+      )
     }
 
-    polls.push(newPoll)
+    // Create poll data
+    const pollData = {
+      title: title.trim(),
+      description: description?.trim() || null,
+      vote_type: vote_type || 'single',
+      allow_multiple_votes: allow_multiple_votes || false,
+      max_votes_per_user: max_votes_per_user || (allow_multiple_votes ? null : 1),
+      expires_at: expires_at || null,
+      status: 'active' as const
+    }
 
-    return NextResponse.json(newPoll, { status: 201 })
+    // Create the poll using the database utility
+    const poll = await serverDb.createPoll(pollData, validOptions)
+    
+    return NextResponse.json(poll, { status: 201 })
   } catch (error) {
+    console.error('Error creating poll:', error)
     return NextResponse.json(
       { error: 'Failed to create poll' },
       { status: 500 }
