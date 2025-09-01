@@ -9,12 +9,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Plus, Search, Loader2, CheckCircle, Edit, Trash2, MoreVertical } from "lucide-react"
 import { db } from "@/lib/database-client"
 import { useAuth } from "@/contexts/auth-context"
-import type { Poll } from "@/types/database"
+import type { Poll, PollOption } from "@/types/database"
+
+// Extended Poll type that includes poll_options from the join query
+interface PollWithOptions extends Poll {
+  poll_options: PollOption[]
+}
 
 export default function PollsPage() {
   const searchParams = useSearchParams()
   const { user } = useAuth()
-  const [polls, setPolls] = useState<Poll[]>([])
+  const [polls, setPolls] = useState<PollWithOptions[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [error, setError] = useState("")
@@ -43,7 +48,6 @@ export default function PollsPage() {
     try {
       setLoading(true)
       const filters = {
-        status: 'active' as const,
         ...(search && { search })
       }
       const data = await db.getPolls(filters)
@@ -84,6 +88,7 @@ export default function PollsPage() {
 
     try {
       setDeletingPollId(pollId)
+      // Use the database client to delete the poll
       await db.deletePoll(pollId)
       
       // Remove the poll from the local state
@@ -100,8 +105,8 @@ export default function PollsPage() {
     }
   }
 
-  const isPollOwner = (poll: Poll) => {
-    return user && poll.created_by === user.id
+  const isPollOwner = (poll: PollWithOptions) => {
+    return user && user.id === poll.created_by
   }
 
   return (

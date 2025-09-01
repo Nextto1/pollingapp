@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Users, Calendar, BarChart3 } from "lucide-react"
+import { PollResultChart } from "@/components/poll-result-chart"
 
 // Mock data for demonstration
 const mockPoll = {
@@ -103,6 +104,9 @@ export default function PollDetailPage({ params }: { params: { id: string } }) {
 
         {/* Sidebar */}
         <div className="space-y-6">
+          {/* Poll Results Chart */}
+          <PollResultChart options={poll.options} totalVotes={poll.totalVotes} />
+          
           {/* Poll Stats */}
           <Card>
             <CardHeader>
