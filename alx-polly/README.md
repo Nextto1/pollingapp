@@ -1,6 +1,29 @@
-# PollApp - Modern Polling Application
+# ALX Polly - Modern Polling Application
 
-A modern, responsive polling application built with Next.js 15, TypeScript, Tailwind CSS, and Shadcn UI components. Create polls, vote, and see real-time results with a beautiful user interface.
+A modern, responsive polling application built with Next.js 15, TypeScript, Tailwind CSS, and Shadcn UI components. ALX Polly allows users to create customizable polls, vote on them, and view real-time results with an elegant and intuitive user interface.
+
+![ALX Polly](./public/preview.png)
+
+## 📝 Overview
+
+ALX Polly is designed to simplify the process of gathering opinions and feedback through customizable polls. Whether you're making a decision with friends, collecting feedback from colleagues, or conducting market research, ALX Polly provides a streamlined experience with real-time results visualization.
+
+### Key Benefits
+
+- **User-Friendly**: Intuitive interface for creating and managing polls
+- **Flexible Options**: Support for single-choice or multiple-choice voting
+- **Real-Time Results**: Instant visualization of voting outcomes
+- **Secure Authentication**: Protected routes and user authentication
+- **Responsive Design**: Works seamlessly across all devices
+- **Customizable**: Various poll settings including expiration dates
+
+### Use Cases
+
+- Team decision making
+- Event planning
+- Customer feedback collection
+- Community engagement
+- Quick surveys and opinion gathering
 
 ## 🚀 Features
 
@@ -99,23 +122,41 @@ alx-polly/
 ### Prerequisites
 - Node.js 18+ 
 - npm or yarn
-- Supabase account
+- Supabase account (free tier works fine)
 
-### 1. Supabase Setup
+### 1. Clone and Install
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/alx-polly.git
+cd alx-polly
+
+# Install dependencies
+npm install
+```
+
+### 2. Supabase Setup
 
 1. **Create a Supabase project**
-   - Go to [supabase.com](https://supabase.com)
-   - Create a new project
-   - Note down your project URL and anon key
+   - Go to [supabase.com](https://supabase.com) and sign up/login
+   - Create a new project with a name of your choice
+   - Wait for the database to be initialized (this may take a few minutes)
+   - Once ready, note down your project URL and anon key from the API settings
 
-2. **Configure Authentication**
+2. **Set up the database schema**
+   - In your Supabase dashboard, go to the SQL Editor
+   - Copy the contents of `database/schema.sql` from this repository
+   - Paste and run the SQL script to create all necessary tables and functions
+
+3. **Configure Authentication**
    - In your Supabase dashboard, go to Authentication > Settings
-   - Configure your site URL (e.g., `http://localhost:3000`)
-   - Set up email templates if desired
+   - Under Site URL, add `http://localhost:3000` (for development)
+   - Enable Email provider under Authentication > Providers
+   - Optionally customize email templates under Authentication > Email Templates
 
-### 2. Environment Variables
+### 3. Environment Setup
 
-Create a `.env.local` file in the root directory:
+Create a `.env.local` file in the root directory with the following variables:
 
 ```env
 # Supabase Configuration
@@ -126,33 +167,23 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 # SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
-### 3. Installation
+### 4. Run the Application
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd alx-polly
-   ```
+```bash
+# Start the development server
+npm run dev
+```
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+Open your browser and navigate to [http://localhost:3000](http://localhost:3000)
 
-3. **Run the development server**
-   ```bash
-   npm run dev
-   ```
+### 5. Available Scripts
 
-4. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-### Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server on port 3000 |
+| `npm run build` | Build the application for production |
+| `npm run start` | Start the production server |
+| `npm test` | Run Jest tests |
 
 ## 🔐 Authentication Features
 
@@ -198,6 +229,44 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ### Phase 3: Advanced Features
 - [ ] Poll categories and tags
+- [ ] Advanced poll types (ranked choice, etc.)
+- [ ] Social sharing integration
+- [ ] Embedded polls for external websites
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how you can help improve ALX Polly:
+
+### Development Guidelines
+
+1. **Fork the repository**
+   - Create your feature branch: `git checkout -b feature/amazing-feature`
+   - Commit your changes: `git commit -m 'Add some amazing feature'`
+   - Push to the branch: `git push origin feature/amazing-feature`
+   - Open a Pull Request
+
+2. **Code Style**
+   - Follow the existing code style and patterns
+   - Use TypeScript for type safety
+   - Write meaningful commit messages
+   - Add appropriate documentation and comments
+
+3. **Testing**
+   - Add tests for new features using Jest
+   - Ensure all existing tests pass before submitting PR
+   - Run tests with `npm test`
+
+### Bug Reports
+
+If you find a bug, please open an issue with:
+- A clear title and description
+- Steps to reproduce the bug
+- Expected behavior
+- Screenshots if applicable
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
 - [ ] Advanced analytics and charts
 - [ ] Poll sharing and embedding
 - [ ] Email notifications
