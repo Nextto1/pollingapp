@@ -1,0 +1,37 @@
+# Cursor Project Rules for Polling App
+
+rules:
+  - id: folder-structure
+    description: "Respect the project folder structure"
+    patterns:
+      - "All poll-related components must go in `/app/polls/`"
+      - "API logic must go in `/app/api/`"
+      - "Shared UI components must go in `/components/`"
+
+  - id: forms
+    description: "Use standard form libraries"
+    patterns:
+      - "Always use `react-hook-form` for form state management"
+      - "Use `shadcn/ui` components (e.g., Button, Input, Form, Card) for styling forms"
+      - "Validation must be handled via `zod` + `@hookform/resolvers`"
+
+  - id: database-auth
+    description: "Follow Supabase patterns"
+    patterns:
+      - "Use Supabase client from `/lib/supabaseClient.ts`"
+      - "For authentication, always use Supabase Auth helpers (`supabase.auth.signInWithPassword`, `supabase.auth.signUp`)"
+      - "Database calls should use Supabase queries, not raw fetch"
+
+  - id: api-handling
+    description: "Standardize API requests"
+    patterns:
+      - "Use `/app/api/` routes for server actions"
+      - "Always wrap API responses in `{ data, error }` objects"
+      - "Error messages must be user-friendly and logged to console for debugging"
+
+  - id: code-style
+    description: "Maintain clean, consistent code"
+    patterns:
+      - "Use TypeScript everywhere (no `.js` files)"
+      - "Use async/await instead of .then()"
+      - "Follow ESLint + Prettier formatting"
