@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-The new polling app system
-=======
 # ALX Polly - Modern Polling Application
 
 A modern, responsive polling application built with Next.js 15, TypeScript, Tailwind CSS, and Shadcn UI components. ALX Polly allows users to create customizable polls, vote on them, and view real-time results with an elegant and intuitive user interface.
@@ -339,4 +336,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 Built with ❤️ using Next.js, Supabase, and Shadcn UI
->>>>>>> b7809eb (coderabbit)

@@ -8,10 +8,6 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/contexts/auth-context"
 import { Loader2 } from "lucide-react"
-import { signUpSchema } from "@/lib/validation"
-import { z } from "zod"
-
-type ValidationErrors = z.inferFormattedError<typeof signUpSchema>
 
 export default function SignUpPage() {
   const [name, setName] = useState("")
@@ -20,7 +16,6 @@ export default function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const [validationErrors, setValidationErrors] = useState<ValidationErrors | null>(null)
   const [success, setSuccess] = useState(false)
   
   const { signUp } = useAuth()
@@ -30,17 +25,15 @@ export default function SignUpPage() {
     e.preventDefault()
     setLoading(true)
     setError("")
-    setValidationErrors(null)
 
-    const result = signUpSchema.safeParse({
-      name,
-      email,
-      password,
-      confirmPassword,
-    })
+    if (password !== confirmPassword) {
+      setError("Passwords do not match")
+      setLoading(false)
+      return
+    }
 
-    if (!result.success) {
-      setValidationErrors(result.error.format())
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long")
       setLoading(false)
       return
     }
@@ -111,9 +104,6 @@ export default function SignUpPage() {
                 required
                 disabled={loading}
               />
-              {validationErrors?.name && (
-                <p className="text-sm text-red-600">{validationErrors.name._errors.join(', ')}</p>
-              )}
             </div>
             
             <div className="space-y-2">
@@ -129,9 +119,6 @@ export default function SignUpPage() {
                 required
                 disabled={loading}
               />
-              {validationErrors?.email && (
-                <p className="text-sm text-red-600">{validationErrors.email._errors.join(', ')}</p>
-              )}
             </div>
             
             <div className="space-y-2">
@@ -147,9 +134,6 @@ export default function SignUpPage() {
                 required
                 disabled={loading}
               />
-              {validationErrors?.password && (
-                <p className="text-sm text-red-600">{validationErrors.password._errors.join(', ')}</p>
-              )}
             </div>
             
             <div className="space-y-2">
@@ -165,9 +149,6 @@ export default function SignUpPage() {
                 required
                 disabled={loading}
               />
-              {validationErrors?.confirmPassword && (
-                <p className="text-sm text-red-600">{validationErrors.confirmPassword._errors.join(', ')}</p>
-              )}
             </div>
             
             <Button type="submit" className="w-full" disabled={loading}>
